@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GitBranch, Star, Users, Heart, Terminal } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -51,7 +52,11 @@ const Footer = () => {
               <li><a href="#" className="hover:text-green-400 transition-colors">Installation Guide</a></li>
               <li><a href="#" className="hover:text-green-400 transition-colors">Module Registry</a></li>
               <li><a href="#" className="hover:text-green-400 transition-colors">Contributing</a></li>
-              <li><a href="#" className="hover:text-green-400 transition-colors">Changelog</a></li>
+              <li>
+                <Link to="/changelog" className="hover:text-green-400 transition-colors">
+                  Changelog
+                </Link>
+              </li>
             </ul>
           </div>
 
