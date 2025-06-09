@@ -69,29 +69,29 @@ const mockReleases = [
 
 const getTypeColor = (type: string) => {
   switch (type) {
-    case 'major': return 'bg-destructive/10 text-destructive border-destructive/20';
-    case 'minor': return 'bg-accent/10 text-accent border-accent/20';
-    case 'patch': return 'bg-primary/10 text-primary border-primary/20';
-    default: return 'bg-muted/10 text-muted-foreground border-muted/20';
+    case 'major': return 'bg-destructive/20 text-destructive border-destructive/30';
+    case 'minor': return 'bg-primary/20 text-primary border-primary/30';
+    case 'patch': return 'bg-accent/20 text-accent border-accent/30';
+    default: return 'bg-muted/20 text-muted-foreground border-muted/30';
   }
 };
 
 const Changelog = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/5">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm">
+      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link to="/">
-                <Button variant="ghost" size="sm" className="hover:bg-accent/10">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <ArrowLeft size={16} className="mr-2" />
                   Back to Home
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold text-foreground">
                   Changelog
                 </h1>
                 <p className="text-muted-foreground">Track MaxCLI updates and improvements</p>
@@ -113,17 +113,17 @@ const Changelog = () => {
             <div key={release.version} className="relative">
               {/* Timeline Line */}
               {index < mockReleases.length - 1 && (
-                <div className="absolute left-6 top-16 bottom-0 w-px bg-gradient-to-b from-primary/50 to-muted/30"></div>
+                <div className="absolute left-6 top-16 bottom-0 w-px bg-gradient-to-b from-primary/50 to-border"></div>
               )}
               
               <div className="flex gap-6">
                 {/* Timeline Dot */}
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center hover:bg-primary/30 transition-colors">
                   <Star size={20} className="text-primary" />
                 </div>
                 
                 {/* Release Content */}
-                <div className="flex-1 bg-card/80 border border-border rounded-lg p-6 hover:bg-card/90 transition-colors backdrop-blur-sm">
+                <div className="flex-1 bg-card border border-border rounded-lg p-6 hover:bg-card/80 transition-colors">
                   {/* Release Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div>
@@ -133,7 +133,7 @@ const Changelog = () => {
                           {release.type}
                         </Badge>
                         {release.isLatest && (
-                          <Badge className="bg-primary/10 text-primary border-primary/20">
+                          <Badge className="bg-primary/20 text-primary border-primary/30">
                             Latest
                           </Badge>
                         )}
@@ -155,7 +155,7 @@ const Changelog = () => {
                       </div>
                     </div>
                     
-                    <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10">
+                    <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-accent hover:text-accent-foreground">
                       <Download size={14} className="mr-2" />
                       Download
                     </Button>
@@ -182,13 +182,13 @@ const Changelog = () => {
         </div>
         
         {/* Footer CTA */}
-        <div className="mt-16 text-center bg-gradient-to-r from-card/50 to-muted/20 border border-border rounded-lg p-8 backdrop-blur-sm">
+        <div className="mt-16 text-center bg-card border border-border rounded-lg p-8">
           <h3 className="text-lg font-semibold mb-2 text-foreground">Stay Updated</h3>
           <p className="text-muted-foreground mb-4">
             Follow our GitHub repository to get notified about new releases
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
+            <Button variant="outline" className="border-border text-foreground hover:bg-accent hover:text-accent-foreground">
               <GitBranch size={16} className="mr-2" />
               Watch on GitHub
             </Button>
