@@ -78,26 +78,28 @@ const getTypeColor = (type: string) => {
 
 const Changelog = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/5">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur">
+      <header className="border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link to="/">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="hover:bg-accent/10">
                   <ArrowLeft size={16} className="mr-2" />
                   Back to Home
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold">Changelog</h1>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                  Changelog
+                </h1>
                 <p className="text-muted-foreground">Track MaxCLI updates and improvements</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
-              <GitBranch size={16} className="text-muted-foreground" />
+              <GitBranch size={16} className="text-primary" />
               <span className="text-sm text-muted-foreground">GitHub Releases</span>
             </div>
           </div>
@@ -111,22 +113,22 @@ const Changelog = () => {
             <div key={release.version} className="relative">
               {/* Timeline Line */}
               {index < mockReleases.length - 1 && (
-                <div className="absolute left-6 top-16 bottom-0 w-px bg-border"></div>
+                <div className="absolute left-6 top-16 bottom-0 w-px bg-gradient-to-b from-primary/50 to-muted/30"></div>
               )}
               
               <div className="flex gap-6">
                 {/* Timeline Dot */}
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center hover:bg-primary/20 transition-colors">
                   <Star size={20} className="text-primary" />
                 </div>
                 
                 {/* Release Content */}
-                <div className="flex-1 bg-card border border-border rounded-lg p-6">
+                <div className="flex-1 bg-card/80 border border-border rounded-lg p-6 hover:bg-card/90 transition-colors backdrop-blur-sm">
                   {/* Release Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <h2 className="text-xl font-semibold">{release.version}</h2>
+                        <h2 className="text-xl font-semibold text-foreground">{release.version}</h2>
                         <Badge className={`${getTypeColor(release.type)} border`}>
                           {release.type}
                         </Badge>
@@ -139,7 +141,7 @@ const Changelog = () => {
                       <p className="text-muted-foreground mb-1">{release.description}</p>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <Calendar size={14} />
+                          <Calendar size={14} className="text-primary" />
                           {new Date(release.date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -147,13 +149,13 @@ const Changelog = () => {
                           })}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Download size={14} />
+                          <Download size={14} className="text-primary" />
                           {release.downloads.toLocaleString()} downloads
                         </div>
                       </div>
                     </div>
                     
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10">
                       <Download size={14} className="mr-2" />
                       Download
                     </Button>
@@ -161,7 +163,7 @@ const Changelog = () => {
                   
                   {/* Changes List */}
                   <div>
-                    <h3 className="font-medium mb-3">What's Changed</h3>
+                    <h3 className="font-medium mb-3 text-foreground">What's Changed</h3>
                     <ul className="space-y-2">
                       {release.changes.map((change, changeIndex) => (
                         <li key={changeIndex} className="flex items-start gap-2 text-sm">
@@ -180,17 +182,17 @@ const Changelog = () => {
         </div>
         
         {/* Footer CTA */}
-        <div className="mt-16 text-center bg-card/50 border border-border rounded-lg p-8">
-          <h3 className="text-lg font-semibold mb-2">Stay Updated</h3>
+        <div className="mt-16 text-center bg-gradient-to-r from-card/50 to-muted/20 border border-border rounded-lg p-8 backdrop-blur-sm">
+          <h3 className="text-lg font-semibold mb-2 text-foreground">Stay Updated</h3>
           <p className="text-muted-foreground mb-4">
             Follow our GitHub repository to get notified about new releases
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Button variant="outline">
+            <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
               <GitBranch size={16} className="mr-2" />
               Watch on GitHub
             </Button>
-            <Button>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Star size={16} className="mr-2" />
               Star Repository
             </Button>
