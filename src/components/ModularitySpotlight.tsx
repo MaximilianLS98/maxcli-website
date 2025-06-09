@@ -108,7 +108,7 @@ const ModularitySpotlight = () => {
             
             <div className="bg-gradient-to-r from-purple-500/10 to-green-500/10 border border-purple-500/20 rounded-xl p-6">
               <p className="text-purple-300 font-medium">
-                💡 Pro Tip: Use <code className="bg-gray-800 px-2 py-1 rounded font-mono text-green-400">maxcli modules</code> to see all available modules and their status.
+                💡 Pro Tip: Use <code className="bg-gray-800 px-2 py-1 rounded font-mono text-green-400">maxcli modules list</code> to see all available modules and their status.
               </p>
             </div>
           </div>

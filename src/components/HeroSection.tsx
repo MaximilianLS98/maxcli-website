@@ -14,7 +14,7 @@ const HeroSection = () => {
         <Terminal size={24} />
       </div>
       
-      <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
+      <div className="relative z-10 text-center max-w-6xl mx-auto px-6 mt-4">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-8">
           <GitBranch size={16} className="text-purple-400" />
