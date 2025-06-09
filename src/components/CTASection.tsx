@@ -66,7 +66,7 @@ const CTASection = () => {
         {/* Trust Indicators */}
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-6">
-            <div className="text-3xl font-bold text-green-400 mb-2">< 30s</div>
+            <div className="text-3xl font-bold text-green-400 mb-2">&lt; 30s</div>
             <div className="text-gray-300">Installation Time</div>
             <div className="text-sm text-gray-400 mt-2">Get up and running instantly</div>
           </div>
