@@ -69,10 +69,10 @@ const mockReleases = [
 
 const getTypeColor = (type: string) => {
   switch (type) {
-    case 'major': return 'bg-red-500/10 text-red-400 border-red-500/20';
-    case 'minor': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-    case 'patch': return 'bg-green-500/10 text-green-400 border-green-500/20';
-    default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    case 'major': return 'bg-destructive/10 text-destructive border-destructive/20';
+    case 'minor': return 'bg-accent/10 text-accent border-accent/20';
+    case 'patch': return 'bg-primary/10 text-primary border-primary/20';
+    default: return 'bg-muted/10 text-muted-foreground border-muted/20';
   }
 };
 
@@ -166,7 +166,7 @@ const Changelog = () => {
                       {release.changes.map((change, changeIndex) => (
                         <li key={changeIndex} className="flex items-start gap-2 text-sm">
                           <span className="text-primary mt-1.5">•</span>
-                          <span className={change.includes('Breaking:') ? 'text-red-400' : 'text-muted-foreground'}>
+                          <span className={change.includes('Breaking:') ? 'text-destructive' : 'text-muted-foreground'}>
                             {change}
                           </span>
                         </li>
