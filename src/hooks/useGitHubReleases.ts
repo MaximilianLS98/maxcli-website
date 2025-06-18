@@ -116,3 +116,27 @@ export const useGitHubReleases = () => {
 		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
 	});
 };
+
+/**
+ * Hook to get just the latest version string for display purposes.
+ * Reuses the same query and cache as useGitHubReleases for efficiency.
+ */
+export const useLatestVersion = () => {
+	return useQuery({
+		queryKey: ['github-releases', 'MaximilianLS98/MaxCLI'],
+		queryFn: fetchGitHubReleases,
+		select: (releases: GitHubRelease[]) => {
+			const latestRelease = releases
+				.filter((release) => !release.draft && !release.prerelease)
+				.sort(
+					(a, b) =>
+						new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+				)[0];
+
+			return latestRelease?.tag_name || 'v2.0.1'; // Fallback to current hardcoded version
+		},
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		retry: 3,
+		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+	});
+};

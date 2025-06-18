@@ -29,15 +29,16 @@ const CTASection = () => {
 						<div className='space-y-3 font-mono text-sm sm:text-base overflow-x-auto'>
 							<div className='text-gray-400'># Install MaxCLI</div>
 							<div className='text-green-400 break-all sm:break-normal whitespace-pre-wrap'>
-								$ curl -sSL https://raw.githubusercontent.com/maxcli/install.sh |
-								bash
+								curl -fsSL
+								https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh
+								| bash
 							</div>
-							<div className='text-gray-400'># Or with npm</div>
+							{/* <div className='text-gray-400'># Or with npm</div>
 							<div className='text-green-400 break-all sm:break-normal'>
 								$ npm install -g @maxcli/core
-							</div>
+							</div> */}
 							<div className='text-gray-300 mt-4 break-words'>
-								✅ Installation complete! Run 'maxcli --help' to get started.
+								✅ Installation complete! Run 'max --help' to get started.
 							</div>
 						</div>
 					</div>
@@ -45,25 +46,29 @@ const CTASection = () => {
 
 				{/* CTA Buttons */}
 				<div className='flex flex-col sm:flex-row items-center justify-center gap-6 mb-16'>
+					<a href='/docs' rel='noopener noreferrer'>
 					<Button className='bg-green-500 hover:bg-green-600 text-black font-semibold px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25'>
 						<Download size={20} className='mr-2' />
 						Installation Guide
-						<ArrowRight size={20} className='ml-2' />
-					</Button>
+							<ArrowRight size={20} className='ml-2' />
+						</Button>
+					</a>
 
+					<a href='/docs' rel='noopener noreferrer'>
 					<Button
 						variant='outline'
 						className='border-gray-600 text-white hover:bg-gray-800 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
 						<Book size={20} className='mr-2' />
 						View Documentation
 					</Button>
+					</a>
 
-					<Button
+					{/* <Button
 						variant='outline'
 						className='border-purple-500 text-purple-300 hover:bg-purple-500/10 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
 						<Settings size={20} className='mr-2' />
 						Customize Modules
-					</Button>
+					</Button> */}
 				</div>
 
 				{/* Trust Indicators */}

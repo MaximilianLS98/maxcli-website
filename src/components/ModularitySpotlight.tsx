@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import { Toggle } from '@/components/ui/toggle';
 import { Check, X, Zap, Shield, Users } from 'lucide-react';
+import { MODULES, getInitialToggleState } from '../data/modules';
+import { ModuleToggleState } from '../types/modules';
 
 const ModularitySpotlight = () => {
-	const [modules, setModules] = useState({
-		ssh: true,
-		docker: true,
-		gcp: false,
-		coolify: true,
-		setup: false,
-		misc: true,
-	});
+	const [modules, setModules] = useState<ModuleToggleState>(getInitialToggleState());
 
 	const toggleModule = (moduleKey: string) => {
 		setModules((prev) => ({
@@ -55,35 +50,39 @@ const ModularitySpotlight = () => {
 					<div className='bg-gray-900 rounded-2xl border border-gray-700 p-8'>
 						<h3 className='text-2xl font-semibold mb-6 text-center'>Module Controls</h3>
 						<div className='space-y-4'>
-							{Object.entries(modules).map(([key, enabled]) => (
-								<div
-									key={key}
-									className='flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-600 hover:border-gray-500 transition-colors'>
-									<div className='flex items-center gap-3'>
-										<div
-											className={`w-3 h-3 rounded-full ${enabled ? 'bg-green-400' : 'bg-gray-500'}`}></div>
-										<span className='font-mono text-lg capitalize'>
-											{key} Manager
-										</span>
-									</div>
+							{MODULES.map((module) => {
+								const enabled = modules[module.key] ?? module.defaultEnabled;
+								return (
+									<div
+										key={module.key}
+										className='flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-600 hover:border-gray-500 transition-colors'>
+										<div className='flex items-center gap-3'>
+											<div
+												className={`w-3 h-3 rounded-full ${
+													enabled ? 'bg-green-400' : 'bg-gray-500'
+												}`}></div>
+											<span className='font-mono text-lg'>{module.name}</span>
+										</div>
 
-									<Toggle
-										pressed={enabled}
-										onPressedChange={() => toggleModule(key)}
-										className='data-[state=on]:bg-green-500 data-[state=on]:text-black'>
-										{enabled ? <Check size={16} /> : <X size={16} />}
-									</Toggle>
-								</div>
-							))}
+										<Toggle
+											pressed={enabled}
+											onPressedChange={() => toggleModule(module.key)}
+											className='data-[state=on]:bg-green-500 data-[state=on]:text-black'>
+											{enabled ? <Check size={16} /> : <X size={16} />}
+										</Toggle>
+									</div>
+								);
+							})}
 						</div>
 
 						<div className='mt-6 p-4 bg-gray-800 rounded-lg border border-gray-600 overflow-hidden'>
 							<div className='text-sm text-gray-400 mb-2'>Current configuration:</div>
 							<code className='text-green-400 font-mono text-xs sm:text-sm break-all whitespace-pre-wrap overflow-x-auto block'>
 								maxcli config --modules=
-								{Object.entries(modules)
-									.filter(([_, enabled]) => enabled)
-									.map(([key]) => key)
+								{MODULES.filter(
+									(module) => modules[module.key] ?? module.defaultEnabled,
+								)
+									.map((module) => module.key)
 									.join(',')}
 							</code>
 						</div>

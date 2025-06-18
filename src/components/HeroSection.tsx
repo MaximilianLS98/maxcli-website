@@ -62,10 +62,12 @@ const HeroSection = () => {
 
 				{/* CTA Buttons */}
 				<div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
-					<Button className='bg-green-500 hover:bg-green-600 text-black font-semibold px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25'>
-						Get Started
-						<ArrowRight size={20} className='ml-2' />
-					</Button>
+					<a href='/docs#installation'>
+						<Button className='bg-green-500 hover:bg-green-600 text-black font-semibold px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25'>
+							Get Started
+							<ArrowRight size={20} className='ml-2' />
+						</Button>
+					</a>
 
 					<Button
 						asChild
@@ -77,12 +79,17 @@ const HeroSection = () => {
 						</Link>
 					</Button>
 
-					<Button
-						variant='outline'
-						className='border-gray-600 text-white hover:bg-gray-800 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
-						<GitBranch size={20} className='mr-2' />
-						GitHub Repo
-					</Button>
+					<a
+						href='https://github.com/MaximilianLS98/MaxCLI'
+						target='_blank'
+						rel='noopener noreferrer'>
+						<Button
+							variant='outline'
+							className='border-gray-600 text-white hover:bg-gray-800 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
+							<GitBranch size={20} className='mr-2' />
+							GitHub Repo
+						</Button>
+					</a>
 				</div>
 
 				{/* Stats */}

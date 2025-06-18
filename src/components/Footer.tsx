@@ -3,8 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GitBranch, Star, Users, Heart, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLatestVersion } from '@/hooks/useGitHubReleases';
 
 const Footer = () => {
+	const { data: latestVersion } = useLatestVersion();
+
 	return (
 		<footer className='bg-gray-900 border-t border-gray-800 py-16'>
 			<div className='max-w-7xl mx-auto px-6'>
@@ -23,21 +26,23 @@ const Footer = () => {
 
 						{/* GitHub Stats */}
 						<div className='flex items-center gap-4'>
+							<a href='https://github.com/MaximilianLS98/MaxCLI' target='_blank' rel='noopener noreferrer'>
 							<Button
 								variant='outline'
 								className='border-gray-600 hover:bg-gray-800 h-10'>
 								<GitBranch size={16} className='mr-2' />
 								View on GitHub
 							</Button>
+							</a>
 
 							<div className='flex items-center gap-2'>
 								<Star size={16} className='text-yellow-400' />
-								<span className='text-sm text-gray-400'>1.2k stars</span>
+								<span className='text-sm text-gray-400'>1 star</span>
 							</div>
 
 							<div className='flex items-center gap-2'>
 								<Users size={16} className='text-blue-400' />
-								<span className='text-sm text-gray-400'>89 contributors</span>
+								<span className='text-sm text-gray-400'>1 contributors</span>
 							</div>
 						</div>
 					</div>
@@ -118,10 +123,10 @@ const Footer = () => {
 						TypeScript
 					</Badge>
 					<Badge variant='outline' className='border-purple-500 text-purple-400'>
-						Cross-Platform
+						MacOS
 					</Badge>
 					<Badge variant='outline' className='border-orange-500 text-orange-400'>
-						Zero Dependencies
+						Zero Bloat
 					</Badge>
 				</div>
 
@@ -136,7 +141,7 @@ const Footer = () => {
 					<div className='flex items-center gap-6 text-sm text-gray-400'>
 						<span>Made for DevOps Engineers & Power Users</span>
 						<div className='w-px h-4 bg-gray-600'></div>
-						<span className='text-green-400'>v2.0.1</span>
+						<span className='text-green-400'>{latestVersion}</span>
 					</div>
 				</div>
 			</div>
