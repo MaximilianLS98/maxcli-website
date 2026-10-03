@@ -1,101 +1,78 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Book, Settings, Download } from 'lucide-react';
+import InstallCommand from './InstallCommand';
+import Reveal from './Reveal';
 
-const CTASection = () => {
-	return (
-		<section className='py-24 bg-gradient-to-r from-purple-900/20 via-gray-900 to-green-900/20'>
-			<div className='max-w-6xl mx-auto px-6 text-center'>
-				<div className='mb-12'>
-					<h2 className='text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-white to-green-400 bg-clip-text text-transparent'>
-						Ready to Build Your Ultimate CLI?
+const highlights = [
+	{ value: '< 30s', label: 'Installation time', detail: 'Get up and running instantly' },
+	{ value: 'max update', label: 'Self-updating', detail: 'Pull the latest release from GitHub' },
+	{ value: '100%', label: 'Open source', detail: 'Read, fork and extend it' },
+];
+
+const CTASection = () => (
+	<section className='relative py-28'>
+		<div className='mx-auto max-w-6xl px-6'>
+			<Reveal>
+				<div className='relative isolate overflow-hidden rounded-3xl border border-white/10 bg-card/70 px-6 py-16 text-center sm:px-16'>
+					<div className='bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]' />
+					<div className='absolute -top-32 left-1/2 -z-10 h-64 w-[600px] -translate-x-1/2 rounded-full bg-primary/20 blur-[100px]' />
+					<div className='absolute -bottom-32 right-0 -z-10 h-64 w-[400px] rounded-full bg-accent/20 blur-[100px]' />
+					<div className='hairline absolute inset-x-12 top-0 h-px' />
+
+					<h2 className='text-gradient mx-auto max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl'>
+						Ready to build your ultimate CLI?
 					</h2>
-					<p className='text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
-						Install in seconds. Contribute on GitHub. Join thousands of developers
-						who've taken control of their command-line experience.
+					<p className='mx-auto mt-5 max-w-xl text-lg text-muted-foreground'>
+						Install in seconds, enable what you need, and contribute on GitHub.
 					</p>
-				</div>
 
-				{/* Installation Preview */}
-				<div className='bg-gray-800 rounded-xl border border-gray-700 p-8 mb-12 max-w-3xl mx-auto overflow-hidden'>
-					<div className='text-left'>
-						<div className='flex items-center gap-2 mb-4'>
-							<div className='w-3 h-3 bg-red-500 rounded-full'></div>
-							<div className='w-3 h-3 bg-yellow-500 rounded-full'></div>
-							<div className='w-3 h-3 bg-green-500 rounded-full'></div>
-							<span className='text-gray-400 ml-4 text-sm'>Quick Install</span>
-						</div>
+					<InstallCommand className='mx-auto mt-10 max-w-2xl' />
+					<p className='mt-3 font-mono text-xs text-muted-foreground'>
+						✅ Installation complete! Run{' '}
+						<span className='text-primary'>max --help</span> to get started.
+					</p>
 
-						<div className='space-y-3 font-mono text-sm sm:text-base overflow-x-auto'>
-							<div className='text-gray-400'># Install MaxCLI</div>
-							<div className='text-green-400 break-all sm:break-normal whitespace-pre-wrap'>
-								curl -fsSL
-								https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh
-								| bash
-							</div>
-							{/* <div className='text-gray-400'># Or with npm</div>
-							<div className='text-green-400 break-all sm:break-normal'>
-								$ npm install -g @maxcli/core
-							</div> */}
-							<div className='text-gray-300 mt-4 break-words'>
-								✅ Installation complete! Run 'max --help' to get started.
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{/* CTA Buttons */}
-				<div className='flex flex-col sm:flex-row items-center justify-center gap-6 mb-16'>
-					<a href='/docs' rel='noopener noreferrer'>
-					<Button className='bg-green-500 hover:bg-green-600 text-black font-semibold px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25'>
-						<Download size={20} className='mr-2' />
-						Installation Guide
-							<ArrowRight size={20} className='ml-2' />
+					<div className='mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row'>
+						<Button
+							asChild
+							size='lg'
+							className='h-12 rounded-xl px-6 text-base font-semibold shadow-[0_0_40px_-8px_hsl(var(--primary)/0.7)]'>
+							<Link to='/docs#installation'>
+								Installation guide
+								<ArrowRight size={18} />
+							</Link>
 						</Button>
-					</a>
-
-					<a href='/docs' rel='noopener noreferrer'>
-					<Button
-						variant='outline'
-						className='border-gray-600 text-white hover:bg-gray-800 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
-						<Book size={20} className='mr-2' />
-						View Documentation
-					</Button>
-					</a>
-
-					{/* <Button
-						variant='outline'
-						className='border-purple-500 text-purple-300 hover:bg-purple-500/10 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
-						<Settings size={20} className='mr-2' />
-						Customize Modules
-					</Button> */}
-				</div>
-
-				{/* Trust Indicators */}
-				<div className='grid md:grid-cols-3 gap-8 max-w-4xl mx-auto'>
-					<div className='bg-gray-800/50 rounded-lg border border-gray-700 p-6'>
-						<div className='text-3xl font-bold text-green-400 mb-2'>&lt; 30s</div>
-						<div className='text-gray-300'>Installation Time</div>
-						<div className='text-sm text-gray-400 mt-2'>
-							Get up and running instantly
-						</div>
+						<Button
+							asChild
+							size='lg'
+							variant='outline'
+							className='h-12 rounded-xl border-white/10 bg-white/[0.03] px-6 text-base hover:bg-white/[0.07]'>
+							<Link to='/docs'>
+								<BookOpen size={18} />
+								View documentation
+							</Link>
+						</Button>
 					</div>
 
-					<div className='bg-gray-800/50 rounded-lg border border-gray-700 p-6'>
-						<div className='text-3xl font-bold text-purple-400 mb-2'>100%</div>
-						<div className='text-gray-300'>Open Source</div>
-						<div className='text-sm text-gray-400 mt-2'>Apache 2.0 License</div>
-					</div>
-
-					<div className='bg-gray-800/50 rounded-lg border border-gray-700 p-6'>
-						<div className='text-3xl font-bold text-blue-400 mb-2'>24/7</div>
-						<div className='text-gray-300'>Community Support</div>
-						<div className='text-sm text-gray-400 mt-2'>Active GitHub discussions</div>
+					<div className='mt-14 grid gap-4 border-t border-white/[0.06] pt-10 sm:grid-cols-3'>
+						{highlights.map((item) => (
+							<div key={item.label}>
+								<div className='font-mono text-2xl font-bold text-primary'>
+									{item.value}
+								</div>
+								<div className='mt-1 font-medium'>{item.label}</div>
+								<div className='mt-1 text-sm text-muted-foreground'>
+									{item.detail}
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
-			</div>
-		</section>
-	);
-};
+			</Reveal>
+		</div>
+	</section>
+);
 
 export default CTASection;

@@ -14,17 +14,19 @@ To add a new module to the website, simply add a new object to the `MODULES` arr
 ```typescript
 {
   key: 'your-module',                    // Unique identifier (kebab-case)
+  moduleId: 'your_module_manager',       // Module name used by the CLI (max modules enable ...)
   name: 'Your Module Manager',           // Display name
   description: 'What your module does',  // Brief description
-  enabled: true,                         // Whether it's currently available
-  defaultEnabled: true,                  // Default state in toggle demo
-  commands: [                           // Key commands this module provides
+  enabled: true,                         // Whether it's shown on the website
+  defaultEnabled: true,                  // Enabled by default in the CLI (DEFAULT_ENABLED_MODULES)
+  commands: [                           // Key commands, without the leading `max`
     'your-module command1',
     'your-module command2'
   ],
-  icon: <YourIcon className="w-6 h-6" />, // React icon component
-  color: 'bg-your-color',               // Tailwind background color class
-  category: 'your-category',            // Optional grouping category
+  icon: <YourIcon className="w-5 h-5" />, // React icon component
+  accent: 'emerald',                    // Accent color (see ACCENT_STYLES)
+  category: 'utilities',                // Grouping category (used by the filter tabs)
+  status: 'wip',                        // Optional: mark work-in-progress modules
 }
 ```
 
@@ -36,17 +38,18 @@ Import icons from `lucide-react`:
 import { YourIcon } from 'lucide-react';
 ```
 
-## 🎨 Available Colors
+## 🎨 Available Accents
 
-Use any Tailwind CSS background color class:
+Accents map to full Tailwind class strings in `ACCENT_STYLES` (so Tailwind can detect them):
 
--   `bg-green-500`, `bg-blue-500`, `bg-purple-500`
--   `bg-orange-500`, `bg-cyan-500`, `bg-yellow-500`
--   `bg-red-500`, `bg-pink-500`, `bg-indigo-500`
+-   `emerald`, `sky`, `violet`, `orange`, `cyan`
+-   `rose`, `yellow`, `indigo`, `fuchsia`
+
+To add a new accent, extend `ModuleAccent` in `../types/modules.ts` and `ACCENT_STYLES`.
 
 ## 📋 Categories
 
-Optional categories for grouping modules:
+Categories group modules in the filter tabs:
 
 -   `infrastructure` - SSH, networking, servers
 -   `containers` - Docker, Kubernetes
@@ -59,9 +62,12 @@ Optional categories for grouping modules:
 
 Once you add a module to the `MODULES` array, it will automatically appear in:
 
-1. **ModularitySpotlight Component** - Interactive toggle demo
-2. **FeatureShowcase Component** - Feature cards with commands
-3. **Module Statistics** - Enabled/disabled counts
+1. **FeatureShowcase Component** - Filterable module cards with copyable commands
+2. **ModularitySpotlight Component** - Install command builder (toggles + presets)
+3. **HeroTerminal Component** - Animated `max modules list` output
+4. **Documentation Page** - Available modules list
+
+Presets for the install command builder live in `MODULE_PRESETS`.
 
 ## ⚡ Helper Functions
 
@@ -82,13 +88,14 @@ import { Zap } from 'lucide-react';
 // 2. Add to the MODULES array
 {
   key: 'performance',
+  moduleId: 'performance_manager',
   name: 'Performance Manager',
   description: 'System monitoring and performance optimization tools',
   enabled: true,
   defaultEnabled: false,
   commands: ['perf monitor', 'perf optimize', 'perf report'],
-  icon: <Zap className="w-6 h-6" />,
-  color: 'bg-pink-500',
+  icon: <Zap className="w-5 h-5" />,
+  accent: 'fuchsia',
   category: 'utilities',
 }
 ```

@@ -6,44 +6,45 @@
 
 @layer base {
 	:root {
-		--background: 17 24 39; /* gray-900 */
-		--foreground: 243 244 246; /* gray-100 */
+		/* Values are HSL channels, consumed as hsl(var(--token)) by tailwind.config.ts */
+		--background: 240 10% 3.9%;
+		--foreground: 0 0% 96%;
 
-		--card: 31 41 55; /* gray-800 */
-		--card-foreground: 243 244 246; /* gray-100 */
+		--card: 240 8% 6.5%;
+		--card-foreground: 0 0% 96%;
 
-		--popover: 31 41 55; /* gray-800 */
-		--popover-foreground: 243 244 246; /* gray-100 */
+		--popover: 240 8% 6.5%;
+		--popover-foreground: 0 0% 96%;
 
-		--primary: 74 246 38; /* green-400 - MaxCLI green */
-		--primary-foreground: 17 24 39; /* gray-900 */
+		--primary: 109 92% 56%; /* MaxCLI terminal green (#4af626) */
+		--primary-foreground: 240 10% 3.9%;
 
-		--secondary: 75 85 99; /* gray-600 */
-		--secondary-foreground: 243 244 246; /* gray-100 */
+		--secondary: 240 5% 14%;
+		--secondary-foreground: 0 0% 96%;
 
-		--muted: 55 65 81; /* gray-700 */
-		--muted-foreground: 156 163 175; /* gray-400 */
+		--muted: 240 5% 12%;
+		--muted-foreground: 240 5% 64%;
 
-		--accent: 164 94 238; /* purple-400 - MaxCLI purple */
-		--accent-foreground: 17 24 39; /* gray-900 */
+		--accent: 269 81% 65%; /* MaxCLI purple */
+		--accent-foreground: 240 10% 3.9%;
 
-		--destructive: 239 68 68; /* red-500 */
-		--destructive-foreground: 243 244 246; /* gray-100 */
+		--destructive: 0 84% 60%;
+		--destructive-foreground: 0 0% 96%;
 
-		--border: 75 85 99; /* gray-600 */
-		--input: 55 65 81; /* gray-700 */
-		--ring: 74 246 38; /* green-400 */
+		--border: 240 5% 15%;
+		--input: 240 5% 17%;
+		--ring: 109 92% 56%;
 
 		--radius: 0.75rem;
 
-		--sidebar-background: 17 24 39; /* gray-900 */
-		--sidebar-foreground: 243 244 246; /* gray-100 */
-		--sidebar-primary: 74 246 38; /* green-400 */
-		--sidebar-primary-foreground: 17 24 39; /* gray-900 */
-		--sidebar-accent: 31 41 55; /* gray-800 */
-		--sidebar-accent-foreground: 243 244 246; /* gray-100 */
-		--sidebar-border: 75 85 99; /* gray-600 */
-		--sidebar-ring: 74 246 38; /* green-400 */
+		--sidebar-background: 240 10% 3.9%;
+		--sidebar-foreground: 0 0% 96%;
+		--sidebar-primary: 109 92% 56%;
+		--sidebar-primary-foreground: 240 10% 3.9%;
+		--sidebar-accent: 240 5% 12%;
+		--sidebar-accent-foreground: 0 0% 96%;
+		--sidebar-border: 240 5% 15%;
+		--sidebar-ring: 109 92% 56%;
 	}
 }
 
@@ -52,13 +53,27 @@
 		@apply border-border;
 	}
 
+	html {
+		scroll-behavior: smooth;
+		scroll-padding-top: 5rem;
+	}
+
 	body {
-		@apply bg-background text-foreground;
-		font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+		@apply bg-background text-foreground font-sans antialiased;
+		font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+	}
+
+	::selection {
+		@apply bg-primary/30 text-white;
+	}
+
+	code,
+	pre,
+	kbd {
+		@apply font-mono;
 	}
 
 	code {
-		font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 		word-wrap: break-word;
 		overflow-wrap: break-word;
 	}
@@ -74,7 +89,7 @@
 
 @layer utilities {
 	.terminal-cursor {
-		animation: blink 1s infinite;
+		animation: blink 1s step-end infinite;
 	}
 
 	@keyframes blink {
@@ -86,5 +101,38 @@
 		100% {
 			opacity: 0;
 		}
+	}
+
+	/* Faint grid that fades out towards the edges */
+	.bg-grid {
+		background-image: linear-gradient(to right, hsl(var(--foreground) / 0.05) 1px, transparent 1px),
+			linear-gradient(to bottom, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
+		background-size: 48px 48px;
+		mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 100%);
+	}
+
+	.bg-dots {
+		background-image: radial-gradient(hsl(var(--foreground) / 0.08) 1px, transparent 1px);
+		background-size: 22px 22px;
+	}
+
+	.text-gradient {
+		@apply bg-gradient-to-br from-white via-white to-white/50 bg-clip-text text-transparent;
+	}
+
+	.text-gradient-brand {
+		@apply bg-gradient-to-r from-primary via-emerald-300 to-accent bg-clip-text text-transparent;
+	}
+
+	/* Thin gradient hairline used as a top highlight on glass panels */
+	.hairline {
+		background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.25), transparent);
+	}
+
+	.scrollbar-none {
+		scrollbar-width: none;
+	}
+	.scrollbar-none::-webkit-scrollbar {
+		display: none;
 	}
 }

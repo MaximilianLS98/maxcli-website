@@ -1,147 +1,128 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { GitBranch, Star, Users, Heart, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Github, Heart, Star } from 'lucide-react';
+import { GITHUB_URL } from '@/lib/site';
 import { useLatestVersion } from '@/hooks/useGitHubReleases';
+import { useGitHubRepo } from '@/hooks/useGitHubRepo';
+import Logo from './Logo';
+
+const columns = [
+	{
+		title: 'Product',
+		links: [
+			{ label: 'Modules', to: '/#modules' },
+			{ label: 'Configure', to: '/#configure' },
+			{ label: 'Changelog', to: '/changelog' },
+		],
+	},
+	{
+		title: 'Docs',
+		links: [
+			{ label: 'Installation', to: '/docs#installation' },
+			{ label: 'Configuration', to: '/docs#configuration' },
+			{ label: 'Troubleshooting', to: '/docs#troubleshooting' },
+			{ label: 'Custom modules', to: '/docs#development' },
+		],
+	},
+	{
+		title: 'Community',
+		links: [
+			{ label: 'GitHub', href: GITHUB_URL },
+			{ label: 'Issues', href: `${GITHUB_URL}/issues` },
+			{ label: 'Releases', href: `${GITHUB_URL}/releases` },
+			{ label: 'Contributing', to: '/docs#development' },
+		],
+	},
+];
+
+const badges = ['Python', 'macOS', 'Modular', 'Zero Bloat'];
 
 const Footer = () => {
 	const { data: latestVersion } = useLatestVersion();
+	const { data: repo } = useGitHubRepo();
 
 	return (
-		<footer className='bg-gray-900 border-t border-gray-800 py-16'>
-			<div className='max-w-7xl mx-auto px-6'>
-				{/* Main Footer Content */}
-				<div className='grid md:grid-cols-4 gap-12 mb-12'>
-					{/* Brand Section */}
+		<footer className='relative border-t border-white/[0.06] bg-black/20'>
+			<div className='hairline absolute inset-x-0 top-0 h-px opacity-50' />
+			<div className='mx-auto max-w-7xl px-6 py-16'>
+				<div className='grid gap-12 md:grid-cols-5'>
 					<div className='md:col-span-2'>
-						<div className='flex items-center gap-3 mb-4'>
-							<Terminal className='w-8 h-8 text-green-400' />
-							<span className='text-2xl font-bold'>MaxCLI</span>
-						</div>
-						<p className='text-gray-400 mb-6 leading-relaxed max-w-md'>
+						<Logo className='text-xl' />
+						<p className='mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground'>
 							The modular command-line powerhouse that adapts to your workflow. Built
 							by developers, for developers.
 						</p>
-
-						{/* GitHub Stats */}
-						<div className='flex items-center gap-4'>
-							<a href='https://github.com/MaximilianLS98/MaxCLI' target='_blank' rel='noopener noreferrer'>
-							<Button
-								variant='outline'
-								className='border-gray-600 hover:bg-gray-800 h-10'>
-								<GitBranch size={16} className='mr-2' />
-								View on GitHub
-							</Button>
-							</a>
-
-							<div className='flex items-center gap-2'>
-								<Star size={16} className='text-yellow-400' />
-								<span className='text-sm text-gray-400'>1 star</span>
-							</div>
-
-							<div className='flex items-center gap-2'>
-								<Users size={16} className='text-blue-400' />
-								<span className='text-sm text-gray-400'>1 contributors</span>
-							</div>
+						<a
+							href={GITHUB_URL}
+							target='_blank'
+							rel='noopener noreferrer'
+							className='mt-6 inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm transition-colors hover:border-white/20 hover:bg-white/[0.06]'>
+							<Github size={16} />
+							Star on GitHub
+							{repo && (
+								<span className='flex items-center gap-1 border-l border-white/10 pl-2 text-muted-foreground'>
+									<Star size={12} className='fill-yellow-400/80 text-yellow-400' />
+									{repo.stargazers_count}
+								</span>
+							)}
+						</a>
+						<div className='mt-6 flex flex-wrap gap-2'>
+							{badges.map((badge) => (
+								<span
+									key={badge}
+									className='rounded-full border border-white/10 px-2.5 py-0.5 font-mono text-[11px] text-muted-foreground'>
+									{badge}
+								</span>
+							))}
 						</div>
 					</div>
 
-					{/* Quick Links */}
-					<div>
-						<h3 className='font-semibold text-white mb-4'>Resources</h3>
-						<ul className='space-y-3 text-gray-400'>
-							<li>
-								<Link to='/docs' className='hover:text-green-400 transition-colors'>
-									Documentation
-								</Link>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Installation Guide
-								</a>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Module Registry
-								</a>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Contributing
-								</a>
-							</li>
-							<li>
+					{columns.map((column) => (
+						<div key={column.title}>
+							<h3 className='text-sm font-semibold'>{column.title}</h3>
+							<ul className='mt-4 space-y-3 text-sm text-muted-foreground'>
+								{column.links.map((link) => (
+									<li key={link.label}>
+										{'href' in link ? (
+											<a
+												href={link.href}
+												target='_blank'
+												rel='noopener noreferrer'
+												className='transition-colors hover:text-primary'>
+												{link.label}
+											</a>
+										) : (
+											<Link
+												to={link.to}
+												className='transition-colors hover:text-primary'>
+												{link.label}
+											</Link>
+										)}
+									</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</div>
+
+				<div className='mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 text-sm text-muted-foreground md:flex-row'>
+					<p>
+						© {new Date().getFullYear()} MaxCLI. Built with{' '}
+						<Heart size={13} className='mx-0.5 inline fill-red-400/80 text-red-400' /> by
+						the open source community.
+					</p>
+					<div className='flex items-center gap-4'>
+						<span>Made for DevOps Engineers & Power Users</span>
+						{latestVersion && (
+							<>
+								<span className='h-4 w-px bg-white/10' />
 								<Link
 									to='/changelog'
-									className='hover:text-green-400 transition-colors'>
-									Changelog
+									className='font-mono text-primary hover:underline'>
+									{latestVersion}
 								</Link>
-							</li>
-						</ul>
-					</div>
-
-					{/* Community */}
-					<div>
-						<h3 className='font-semibold text-white mb-4'>Community</h3>
-						<ul className='space-y-3 text-gray-400'>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									GitHub Discussions
-								</a>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Discord Server
-								</a>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Twitter
-								</a>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Stack Overflow
-								</a>
-							</li>
-							<li>
-								<a href='#' className='hover:text-green-400 transition-colors'>
-									Reddit
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-
-				{/* Badges Row */}
-				<div className='flex flex-wrap items-center gap-4 py-8 border-t border-gray-800'>
-					<Badge variant='outline' className='border-green-500 text-green-400'>
-						Apache 2.0 License
-					</Badge>
-					<Badge variant='outline' className='border-blue-500 text-blue-400'>
-						TypeScript
-					</Badge>
-					<Badge variant='outline' className='border-purple-500 text-purple-400'>
-						MacOS
-					</Badge>
-					<Badge variant='outline' className='border-orange-500 text-orange-400'>
-						Zero Bloat
-					</Badge>
-				</div>
-
-				{/* Bottom Row */}
-				<div className='flex flex-col md:flex-row items-center justify-between pt-8 border-t border-gray-800'>
-					<div className='text-gray-400 text-sm mb-4 md:mb-0'>
-						© 2024 MaxCLI. Built with{' '}
-						<Heart size={14} className='inline text-red-400 mx-1' /> by the open source
-						community.
-					</div>
-
-					<div className='flex items-center gap-6 text-sm text-gray-400'>
-						<span>Made for DevOps Engineers & Power Users</span>
-						<div className='w-px h-4 bg-gray-600'></div>
-						<span className='text-green-400'>{latestVersion}</span>
+							</>
+						)}
 					</div>
 				</div>
 			</div>

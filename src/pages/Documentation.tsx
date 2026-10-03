@@ -1,285 +1,262 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React, { useEffect, useState } from 'react';
 import {
-	ArrowLeft,
-	Terminal,
+	AlertTriangle,
+	BookOpen,
+	CheckCircle,
+	Code,
 	Download,
+	ExternalLink,
+	Github,
+	Package,
 	Settings,
 	Shield,
+	Terminal,
 	Zap,
-	GitBranch,
-	Package,
-	Code,
-	ExternalLink,
-	CheckCircle,
-	AlertTriangle,
-	Info,
-	Copy,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { GITHUB_URL, INSTALL_COMMAND, buildInstallCommand } from '@/lib/site';
+import SiteLayout from '../components/layout/SiteLayout';
+import CodeBlock from '../components/docs/CodeBlock';
+import Callout from '../components/docs/Callout';
+import { MODULES, ACCENT_STYLES, CATEGORY_LABELS } from '../data/modules';
+
+const SECTIONS = [
+	{ id: 'overview', label: 'Overview', icon: <Zap size={15} /> },
+	{ id: 'installation', label: 'Installation', icon: <Download size={15} /> },
+	{ id: 'modules', label: 'Modules', icon: <Package size={15} /> },
+	{ id: 'configuration', label: 'Configuration', icon: <Settings size={15} /> },
+	{ id: 'usage', label: 'Usage', icon: <Terminal size={15} /> },
+	{ id: 'troubleshooting', label: 'Troubleshooting', icon: <Shield size={15} /> },
+	{ id: 'development', label: 'Development', icon: <Code size={15} /> },
+	{ id: 'uninstalling', label: 'Uninstalling', icon: <AlertTriangle size={15} /> },
+];
 
 /**
- * Documentation page for MaxCLI - A comprehensive guide covering installation,
- * configuration, modules, and troubleshooting.
+ * Track which section is currently in view for the sidebar highlight.
  */
-const Documentation: React.FC = () => {
-	/**
-	 * Copy text to clipboard functionality
-	 */
-	const copyToClipboard = (text: string) => {
-		navigator.clipboard.writeText(text);
-	};
+const useActiveSection = (ids: string[]) => {
+	const [active, setActive] = useState(ids[0]);
 
-	/**
-	 * Code block component with copy functionality
-	 */
-	const CodeBlock: React.FC<{ children: string; language?: string }> = ({
-		children,
-		language = 'bash',
-	}) => {
-		return (
-			<div className='relative bg-gray-900 border border-gray-700 rounded-lg p-4 my-4'>
-				<div className='flex items-center justify-between mb-2'>
-					<span className='text-xs text-gray-400 uppercase tracking-wide'>
-						{language}
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const visible = entries
+					.filter((entry) => entry.isIntersecting)
+					.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+				if (visible[0]) setActive(visible[0].target.id);
+			},
+			{ rootMargin: '-80px 0px -65% 0px' },
+		);
+		ids.forEach((id) => {
+			const element = document.getElementById(id);
+			if (element) observer.observe(element);
+		});
+		return () => observer.disconnect();
+	}, [ids]);
+
+	return active;
+};
+
+const SectionHeader = ({
+	id,
+	title,
+	icon,
+	description,
+}: {
+	id: string;
+	title: string;
+	icon: React.ReactNode;
+	description?: string;
+}) => (
+	<div className='mb-8'>
+		<a href={`#${id}`} className='group inline-flex items-center gap-3'>
+			<span className='flex h-9 w-9 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-primary'>
+				{icon}
+			</span>
+			<h2 className='text-3xl font-bold tracking-tight'>{title}</h2>
+			<span className='text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100'>
+				#
+			</span>
+		</a>
+		{description && <p className='mt-3 text-lg text-muted-foreground'>{description}</p>}
+	</div>
+);
+
+const Section = ({ id, children }: { id: string; children: React.ReactNode }) => (
+	<section id={id} className='scroll-mt-24 border-b border-white/[0.06] py-14 first:pt-0 last:border-0'>
+		{children}
+	</section>
+);
+
+const Card = ({ title, children, badge }: { title?: string; children: React.ReactNode; badge?: string }) => (
+	<div className='rounded-2xl border border-white/[0.07] bg-card/60 p-6'>
+		{title && (
+			<div className='mb-3 flex items-center gap-2'>
+				<h3 className='text-lg font-semibold'>{title}</h3>
+				{badge && (
+					<span className='rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary'>
+						{badge}
 					</span>
-					<Button
-						onClick={() => copyToClipboard(children)}
-						variant='ghost'
-						size='sm'
-						className='h-6 w-6 p-0 text-gray-400 hover:text-white'>
-						<Copy size={12} />
-					</Button>
-				</div>
-				<pre className='text-sm text-gray-300 overflow-x-auto'>
-					<code>{children}</code>
-				</pre>
+				)}
 			</div>
-		);
-	};
+		)}
+		{children}
+	</div>
+);
 
-	/**
-	 * Section header component
-	 */
-	const SectionHeader: React.FC<{
-		title: string;
-		icon: React.ReactNode;
-		description?: string;
-		id: string;
-	}> = ({ title, icon, description, id }) => (
-		<div className='mb-8' id={id}>
-			<div className='flex items-center gap-3 mb-2'>
-				<div className='text-green-400'>{icon}</div>
-				<h2 className='text-3xl font-bold text-white'>{title}</h2>
-			</div>
-			{description && <p className='text-gray-400 text-lg'>{description}</p>}
-		</div>
-	);
+const InlineCode = ({ children }: { children: React.ReactNode }) => (
+	<code className='rounded bg-white/[0.06] px-1.5 py-0.5 text-[0.9em] text-primary'>{children}</code>
+);
 
-	/**
-	 * Info callout component
-	 */
-	const InfoCallout: React.FC<{
-		type: 'info' | 'warning' | 'success';
-		title: string;
-		children: React.ReactNode;
-	}> = ({ type, title, children }) => {
-		const styles = {
-			info: 'border-blue-500/30 bg-blue-500/10',
-			warning: 'border-yellow-500/30 bg-yellow-500/10',
-			success: 'border-green-500/30 bg-green-500/10',
-		};
-
-		const icons = {
-			info: <Info size={16} className='text-blue-400' />,
-			warning: <AlertTriangle size={16} className='text-yellow-400' />,
-			success: <CheckCircle size={16} className='text-green-400' />,
-		};
-
-		return (
-			<div className={`border rounded-lg p-4 my-4 ${styles[type]}`}>
-				<div className='flex items-center gap-2 mb-2'>
-					{icons[type]}
-					<h4 className='font-medium text-white'>{title}</h4>
-				</div>
-				<div className='text-gray-300 text-sm'>{children}</div>
-			</div>
-		);
-	};
+const Documentation: React.FC = () => {
+	const active = useActiveSection(SECTIONS.map((section) => section.id));
 
 	return (
-		<div className='min-h-screen bg-gray-900 text-white'>
-			{/* Header */}
-			<header className='border-b border-gray-800 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 sticky top-0 z-50'>
-				<div className='max-w-6xl mx-auto px-6 py-4'>
-					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-4'>
-							<Link to='/'>
-								<Button
-									variant='ghost'
-									size='sm'
-									className='text-gray-400 hover:text-white hover:bg-gray-800'>
-									<ArrowLeft size={16} className='mr-2' />
-									Back to Home
-								</Button>
-							</Link>
-							<div>
-								<h1 className='text-2xl font-bold text-white'>Documentation</h1>
-								<p className='text-gray-400'>
-									Complete guide to MaxCLI installation and usage
-								</p>
-							</div>
-						</div>
-
-						<div className='flex items-center gap-2'>
-							<Terminal size={16} className='text-green-400' />
-							<span className='text-sm text-gray-400'>MaxCLI Guide</span>
-						</div>
+		<SiteLayout>
+			{/* Page header */}
+			<div className='relative isolate overflow-hidden border-b border-white/[0.06] pb-12 pt-32'>
+				<div className='bg-grid absolute inset-0 -z-10' />
+				<div className='absolute left-1/3 top-0 -z-10 h-72 w-[600px] rounded-full bg-primary/10 blur-[100px]' />
+				<div className='mx-auto max-w-7xl px-6'>
+					<div className='inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-primary'>
+						<BookOpen size={14} />
+						Documentation
 					</div>
+					<h1 className='text-gradient mt-4 text-4xl font-bold tracking-tight sm:text-5xl'>
+						MaxCLI Guide
+					</h1>
+					<p className='mt-4 max-w-2xl text-lg text-muted-foreground'>
+						Everything you need to install, configure and extend MaxCLI.
+					</p>
 				</div>
-			</header>
+			</div>
 
-			{/* Navigation */}
-			<nav className='bg-gray-800/50 border-b border-gray-800'>
-				<div className='max-w-6xl mx-auto px-6 py-3'>
-					<div className='flex gap-6 text-sm overflow-x-auto'>
-						{[
-							{ href: '#overview', label: 'Overview' },
-							{ href: '#installation', label: 'Installation' },
-							{ href: '#modules', label: 'Modules' },
-							{ href: '#configuration', label: 'Configuration' },
-							{ href: '#usage', label: 'Usage' },
-							{ href: '#troubleshooting', label: 'Troubleshooting' },
-							{ href: '#development', label: 'Development' },
-						].map((item) => (
-							<a
-								key={item.href}
-								href={item.href}
-								className='text-gray-400 hover:text-white whitespace-nowrap transition-colors'>
-								{item.label}
-							</a>
-						))}
-					</div>
-				</div>
+			{/* Mobile section nav */}
+			<nav className='scrollbar-none sticky top-16 z-40 flex gap-1 overflow-x-auto border-b border-white/[0.06] bg-background/80 px-6 py-2 backdrop-blur-xl lg:hidden'>
+				{SECTIONS.map((section) => (
+					<a
+						key={section.id}
+						href={`#${section.id}`}
+						className={cn(
+							'shrink-0 rounded-full px-3 py-1 text-sm transition-colors',
+							active === section.id
+								? 'bg-primary/10 text-primary'
+								: 'text-muted-foreground hover:text-foreground',
+						)}>
+						{section.label}
+					</a>
+				))}
 			</nav>
 
-			{/* Content */}
-			<main className='max-w-6xl mx-auto px-6 py-12'>
-				{/* Overview Section */}
-				<SectionHeader
-					id='overview'
-					title='Overview'
-					icon={<Zap size={24} />}
-					description='MaxCLI is a powerful, modular command-line interface designed for developers and DevOps engineers.'
-				/>
-
-				<div className='mb-12'>
-					<div className='grid md:grid-cols-2 gap-6 mb-8'>
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-3'>Key Features</h3>
-							<ul className='space-y-2 text-gray-300'>
-								<li className='flex items-center gap-2'>
-									<CheckCircle size={16} className='text-green-400' />
-									Modular Architecture
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle size={16} className='text-green-400' />
-									Dynamic Loading
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle size={16} className='text-green-400' />
-									Personal Configuration
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle size={16} className='text-green-400' />
-									Comprehensive Tools
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle size={16} className='text-green-400' />
-									Smart Bootstrap
-								</li>
-							</ul>
-						</div>
-
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-3'>Quick Start</h3>
-							<p className='text-gray-300 mb-4'>
-								Install MaxCLI with a single command:
+			<div className='mx-auto grid max-w-7xl gap-12 px-6 py-14 lg:grid-cols-[220px_1fr]'>
+				{/* Sidebar */}
+				<aside className='hidden lg:block'>
+					<nav className='sticky top-28 space-y-1'>
+						<p className='mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+							On this page
+						</p>
+						{SECTIONS.map((section) => (
+							<a
+								key={section.id}
+								href={`#${section.id}`}
+								className={cn(
+									'relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
+									active === section.id
+										? 'bg-white/[0.04] text-foreground'
+										: 'text-muted-foreground hover:text-foreground',
+								)}>
+								{active === section.id && (
+									<span className='absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary' />
+								)}
+								<span className={active === section.id ? 'text-primary' : ''}>
+									{section.icon}
+								</span>
+								{section.label}
+							</a>
+						))}
+						<div className='!mt-8 rounded-xl border border-white/[0.07] bg-card/60 p-4'>
+							<p className='text-sm font-medium'>Need help?</p>
+							<p className='mt-1 text-xs text-muted-foreground'>
+								Open an issue on GitHub.
 							</p>
-							<CodeBlock>
-								{`curl -fsSL https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh | bash`}
-							</CodeBlock>
+							<a
+								href={`${GITHUB_URL}/issues`}
+								target='_blank'
+								rel='noopener noreferrer'
+								className='mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:underline'>
+								<Github size={13} />
+								GitHub issues
+								<ExternalLink size={11} />
+							</a>
 						</div>
-					</div>
-				</div>
+					</nav>
+				</aside>
 
-				{/* Installation Section */}
-				<SectionHeader
-					id='installation'
-					title='Installation'
-					icon={<Download size={24} />}
-					description='MaxCLI supports two installation methods: Standalone and Local.'
-				/>
-
-				<div className='mb-12'>
-					<div className='space-y-8'>
-						{/* Standalone Installation */}
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<div className='flex items-center gap-2 mb-4'>
-								<Badge className='bg-green-500/20 text-green-400 border-green-500/30'>
-									Recommended
-								</Badge>
-								<h3 className='text-xl font-semibold text-white'>
-									Standalone Installation
-								</h3>
-							</div>
-
-							<p className='text-gray-300 mb-4'>
-								The standalone method automatically downloads and installs MaxCLI
-								with a single command:
-							</p>
-
-							<div className='space-y-4'>
-								<div>
-									<h4 className='font-medium text-white mb-2'>
-										Basic Installation
-									</h4>
-									<CodeBlock>
-										{`curl -fsSL https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh | bash`}
-									</CodeBlock>
-								</div>
-
-								<div>
-									<h4 className='font-medium text-white mb-2'>
-										With Preset Modules
-									</h4>
-									<CodeBlock>
-										{`curl -fsSL https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh | bash -s -- --modules "ssh_manager,setup_manager,docker_manager"`}
-									</CodeBlock>
-								</div>
-
-								<div>
-									<h4 className='font-medium text-white mb-2'>All Modules</h4>
-									<CodeBlock>
-										{`curl -fsSL https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh | bash -s -- --modules "ssh_manager,docker_manager,kubernetes_manager,gcp_manager,coolify_manager,setup_manager,misc_manager,config_manager"`}
-									</CodeBlock>
-								</div>
-							</div>
+				{/* Content */}
+				<div className='min-w-0 max-w-4xl'>
+					<Section id='overview'>
+						<SectionHeader
+							id='overview'
+							title='Overview'
+							icon={<Zap size={18} />}
+							description='MaxCLI is a powerful, modular command-line interface designed for developers and DevOps engineers.'
+						/>
+						<div className='grid gap-4 md:grid-cols-2'>
+							<Card title='Key Features'>
+								<ul className='space-y-2.5 text-sm text-zinc-300'>
+									{[
+										'Modular Architecture',
+										'Dynamic Loading',
+										'Personal Configuration',
+										'Comprehensive Tools',
+										'Smart Bootstrap',
+									].map((feature) => (
+										<li key={feature} className='flex items-center gap-2'>
+											<CheckCircle size={15} className='text-primary' />
+											{feature}
+										</li>
+									))}
+								</ul>
+							</Card>
+							<Card title='Quick Start'>
+								<p className='text-sm text-zinc-300'>Install MaxCLI with a single command:</p>
+								<CodeBlock>{INSTALL_COMMAND}</CodeBlock>
+							</Card>
 						</div>
+					</Section>
 
-						{/* Local Installation */}
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Local Installation
-							</h3>
-							<p className='text-gray-300 mb-4'>
-								The local method gives you full control and is ideal for development
-								or customization:
-							</p>
+					<Section id='installation'>
+						<SectionHeader
+							id='installation'
+							title='Installation'
+							icon={<Download size={18} />}
+							description='MaxCLI supports two installation methods: Standalone and Local.'
+						/>
+						<div className='space-y-6'>
+							<Card title='Standalone Installation' badge='Recommended'>
+								<p className='text-sm text-zinc-300'>
+									The standalone method automatically downloads and installs MaxCLI
+									with a single command.
+								</p>
+								<h4 className='mt-6 text-sm font-medium'>Basic Installation</h4>
+								<CodeBlock>{INSTALL_COMMAND}</CodeBlock>
+								<h4 className='mt-6 text-sm font-medium'>With Preset Modules</h4>
+								<CodeBlock>
+									{buildInstallCommand(['ssh_manager', 'setup_manager', 'docker_manager'])}
+								</CodeBlock>
+								<h4 className='mt-6 text-sm font-medium'>All Modules</h4>
+								<CodeBlock>
+									{buildInstallCommand(MODULES.map((module) => module.moduleId))}
+								</CodeBlock>
+							</Card>
 
-							<CodeBlock>
-								{`# Clone the repository
+							<Card title='Local Installation'>
+								<p className='text-sm text-zinc-300'>
+									The local method gives you full control and is ideal for development
+									or customization:
+								</p>
+								<CodeBlock>
+									{`# Clone the repository
 git clone https://github.com/maximilianls98/maxcli.git
 cd maxcli
 
@@ -288,20 +265,13 @@ cd maxcli
 
 # Or with preset modules
 ./bootstrap.sh --modules "ssh_manager,setup_manager,docker_manager"`}
-							</CodeBlock>
-						</div>
+								</CodeBlock>
+							</Card>
 
-						{/* Post-Installation */}
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Post-Installation
-							</h3>
-							<p className='text-gray-300 mb-4'>
-								After installation, follow these steps:
-							</p>
-
-							<CodeBlock>
-								{`# 1. Restart your terminal or reload your shell
+							<Card title='Post-Installation'>
+								<p className='text-sm text-zinc-300'>After installation, follow these steps:</p>
+								<CodeBlock>
+									{`# 1. Restart your terminal or reload your shell
 source ~/.zshrc
 
 # 2. Initialize your personal configuration
@@ -314,188 +284,111 @@ max --help
 max modules list
 
 # 5. Test a command (if ssh_manager is enabled)
-max ssh list-targets`}
-							</CodeBlock>
+max ssh targets list`}
+								</CodeBlock>
+							</Card>
 						</div>
-					</div>
-				</div>
+					</Section>
 
-				{/* Modules Section */}
-				<SectionHeader
-					id='modules'
-					title='Available Modules'
-					icon={<Package size={24} />}
-					description='MaxCLI provides a collection of specialized modules for different development needs.'
-				/>
-
-				<div className='mb-12'>
-					<div className='grid gap-6'>
-						{[
-							{
-								name: 'ssh_manager',
-								description:
-									'Complete SSH management: connections, keys, backups, and file transfers with GPG encryption',
-								commands: [
-									'ssh targets add/list',
-									'ssh connect',
-									'ssh generate-keypair',
-									'ssh backup export/import',
-								],
-								badge: 'Core',
-							},
-							{
-								name: 'docker_manager',
-								description:
-									'Docker container management, image operations, and development environments',
-								commands: ['docker clean --extensive', 'docker clean --minimal'],
-								badge: 'DevOps',
-							},
-							{
-								name: 'kubernetes_manager',
-								description: 'Kubernetes context switching and cluster management',
-								commands: ['kctx <context>', 'kubectl', 'k8s'],
-								badge: 'DevOps',
-							},
-							{
-								name: 'gcp_manager',
-								description:
-									'Google Cloud Platform configuration and authentication management',
-								commands: ['gcp config switch/create/list', 'gcloud'],
-								badge: 'Cloud',
-							},
-							{
-								name: 'coolify_manager',
-								description: 'Coolify instance management through REST API',
-								commands: ['coolify health', 'coolify status', 'coolify services'],
-								badge: 'Cloud',
-							},
-							{
-								name: 'setup_manager',
-								description:
-									'Development environment setup and configuration profiles',
-								commands: ['setup minimal', 'setup dev-full', 'setup apps'],
-								badge: 'Setup',
-							},
-							{
-								name: 'misc_manager',
-								description:
-									'Database backup utilities, CSV data processing, and application deployment tools',
-								commands: ['backup-db', 'deploy-app', 'process-csv'],
-								badge: 'Utility',
-							},
-							{
-								name: 'config_manager',
-								description:
-									'Personal configuration management with init, backup, and restore functionality',
-								commands: ['config init', 'config backup', 'config restore'],
-								badge: 'Core',
-							},
-						].map((module) => (
-							<div
-								key={module.name}
-								className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-								<div className='flex items-start justify-between mb-3'>
-									<div className='flex items-center gap-3'>
-										<h3 className='text-lg font-semibold text-white font-mono'>
-											{module.name}
-										</h3>
-										<Badge className='bg-blue-500/20 text-blue-400 border-blue-500/30'>
-											{module.badge}
-										</Badge>
+					<Section id='modules'>
+						<SectionHeader
+							id='modules'
+							title='Available Modules'
+							icon={<Package size={18} />}
+							description='MaxCLI provides a collection of specialized modules for different development needs.'
+						/>
+						<div className='grid gap-4'>
+							{MODULES.map((module) => {
+								const accent = ACCENT_STYLES[module.accent];
+								return (
+									<div
+										key={module.key}
+										className='flex gap-4 rounded-2xl border border-white/[0.07] bg-card/60 p-5'>
+										<div
+											className={cn(
+												'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border',
+												accent.bg,
+												accent.border,
+												accent.text,
+											)}>
+											{module.icon}
+										</div>
+										<div className='min-w-0 flex-1'>
+											<div className='flex flex-wrap items-center gap-2'>
+												<h3 className='font-mono font-semibold'>{module.moduleId}</h3>
+												<span className='rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-muted-foreground'>
+													{CATEGORY_LABELS[module.category]}
+												</span>
+												{module.defaultEnabled && (
+													<span className='rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[11px] text-primary'>
+														Default
+													</span>
+												)}
+											</div>
+											<p className='mt-1.5 text-sm text-zinc-400'>{module.description}</p>
+											<div className='mt-3 flex flex-wrap gap-2'>
+												{module.commands.map((command) => (
+													<code
+														key={command}
+														className='rounded-md border border-white/[0.06] bg-black/40 px-2 py-1 text-xs text-zinc-300'>
+														max {command}
+													</code>
+												))}
+											</div>
+										</div>
 									</div>
-								</div>
-								<p className='text-gray-300 mb-4'>{module.description}</p>
-								<div>
-									<h4 className='font-medium text-white mb-2'>Key Commands:</h4>
-									<div className='flex flex-wrap gap-2'>
-										{module.commands.map((command) => (
-											<code
-												key={command}
-												className='bg-gray-900 text-green-400 px-2 py-1 rounded text-sm'>
-												{command}
-											</code>
-										))}
-									</div>
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-
-				{/* Configuration Section */}
-				<SectionHeader
-					id='configuration'
-					title='Configuration'
-					icon={<Settings size={24} />}
-					description='Set up and manage your MaxCLI configuration.'
-				/>
-
-				<div className='mb-12'>
-					<div className='space-y-6'>
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Personal Configuration
-							</h3>
-							<p className='text-gray-300 mb-4'>
-								Initialize your personal configuration with:
-							</p>
-							<CodeBlock>{`max config init`}</CodeBlock>
-							<p className='text-gray-300 text-sm'>
-								This creates{' '}
-								<code className='bg-gray-900 text-green-400 px-1 rounded'>
-									~/.config/maxcli/config.json
-								</code>{' '}
-								with your git settings, dotfiles repository URL, GCP project
-								mappings, and Coolify instance details.
-							</p>
+								);
+							})}
 						</div>
+					</Section>
 
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Module Management
-							</h3>
-							<div className='space-y-4'>
-								<div>
-									<h4 className='font-medium text-white mb-2'>
-										List Available Modules
-									</h4>
-									<CodeBlock>{`max modules list`}</CodeBlock>
-								</div>
-								<div>
-									<h4 className='font-medium text-white mb-2'>
-										Enable/Disable Modules
-									</h4>
-									<CodeBlock>
-										{`# Enable a module
+					<Section id='configuration'>
+						<SectionHeader
+							id='configuration'
+							title='Configuration'
+							icon={<Settings size={18} />}
+							description='Set up and manage your MaxCLI configuration.'
+						/>
+						<div className='space-y-6'>
+							<Card title='Personal Configuration'>
+								<p className='text-sm text-zinc-300'>Initialize your personal configuration with:</p>
+								<CodeBlock>{`max config init`}</CodeBlock>
+								<p className='text-sm leading-relaxed text-zinc-400'>
+									This creates <InlineCode>~/.config/maxcli/config.json</InlineCode> with
+									your git settings, dotfiles repository URL, GCP project mappings, and
+									Coolify instance details.
+								</p>
+							</Card>
+
+							<Card title='Module Management'>
+								<h4 className='text-sm font-medium'>List Available Modules</h4>
+								<CodeBlock>{`max modules list`}</CodeBlock>
+								<h4 className='mt-6 text-sm font-medium'>Enable/Disable Modules</h4>
+								<CodeBlock>
+									{`# Enable a module
 max modules enable kubernetes_manager
 
 # Disable a module
-max modules disable ssh_backup
+max modules disable docker_manager
 
 # Enable multiple modules
 max modules enable kubernetes_manager gcp_manager misc_manager`}
-									</CodeBlock>
-								</div>
-							</div>
+								</CodeBlock>
+							</Card>
 						</div>
-					</div>
-				</div>
+					</Section>
 
-				{/* Usage Section */}
-				<SectionHeader
-					id='usage'
-					title='Usage Examples'
-					icon={<Terminal size={24} />}
-					description='Common usage patterns and examples for MaxCLI modules.'
-				/>
-
-				<div className='mb-12'>
-					<div className='space-y-6'>
-						{/* SSH Manager Examples */}
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>SSH Manager</h3>
-							<CodeBlock>
-								{`# Manage SSH targets
+					<Section id='usage'>
+						<SectionHeader
+							id='usage'
+							title='Usage Examples'
+							icon={<Terminal size={18} />}
+							description='Common usage patterns and examples for MaxCLI modules.'
+						/>
+						<div className='space-y-6'>
+							<Card title='SSH Manager'>
+								<CodeBlock>
+									{`# Manage SSH targets
 max ssh targets add prod ubuntu 192.168.1.100 --port 2222 --key ~/.ssh/prod_key
 max ssh targets list
 max ssh targets remove old-server
@@ -511,16 +404,12 @@ max ssh copy-public-key prod       # Copy public key to target
 # SSH key backup and restore with GPG encryption
 max ssh backup export              # Create encrypted backup
 max ssh backup import              # Restore from backup`}
-							</CodeBlock>
-						</div>
+								</CodeBlock>
+							</Card>
 
-						{/* Docker Manager Examples */}
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Docker Manager
-							</h3>
-							<CodeBlock>
-								{`# Extensive cleanup (removes all unused resources)
+							<Card title='Docker Manager'>
+								<CodeBlock>
+									{`# Extensive cleanup (removes all unused resources)
 max docker clean --extensive
 
 # Minimal cleanup (preserves recent items)
@@ -528,14 +417,12 @@ max docker clean --minimal
 
 # Default cleanup (defaults to minimal for safety)
 max docker clean`}
-							</CodeBlock>
-						</div>
+								</CodeBlock>
+							</Card>
 
-						{/* GCP Manager Examples */}
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>GCP Manager</h3>
-							<CodeBlock>
-								{`# List available configurations
+							<Card title='GCP Manager'>
+								<CodeBlock>
+									{`# List available configurations
 max gcp config list
 
 # Switch configurations (with automatic ADC and quota project switching)
@@ -546,72 +433,74 @@ max gcp config create development
 
 # Interactive mode - choose from menu
 max gcp config switch`}
-							</CodeBlock>
+								</CodeBlock>
+							</Card>
+
+							<Card title='OpenClaw Manager'>
+								<CodeBlock>
+									{`# Check local OpenClaw status
+max openclaw status
+
+# Control the gateway
+max openclaw gateway status
+max openclaw gateway restart
+
+# Tail recent logs
+max openclaw logs --lines 100`}
+								</CodeBlock>
+							</Card>
 						</div>
-					</div>
-				</div>
+					</Section>
 
-				{/* Troubleshooting Section */}
-				<SectionHeader
-					id='troubleshooting'
-					title='Troubleshooting'
-					icon={<Shield size={24} />}
-					description='Common issues and their solutions.'
-				/>
-
-				<div className='mb-12'>
-					<div className='space-y-6'>
-						<InfoCallout type='warning' title='Installation Issues'>
+					<Section id='troubleshooting'>
+						<SectionHeader
+							id='troubleshooting'
+							title='Troubleshooting'
+							icon={<Shield size={18} />}
+							description='Common issues and their solutions.'
+						/>
+						<Callout type='warning' title='Installation Issues'>
 							<p>If installation times out waiting for Homebrew:</p>
 							<CodeBlock>
 								{`export HOMEBREW_NO_AUTO_UPDATE=1
-curl -fsSL https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh | bash --modules "ssh_manager"`}
+${buildInstallCommand(['ssh_manager'])}`}
 							</CodeBlock>
-						</InfoCallout>
+						</Callout>
 
-						<InfoCallout type='info' title='Mock Response Issue'>
+						<Callout type='info' title='Mock Response Issue'>
 							<p>
-								If the max command only responds with mock responses after running
-								test scripts:
+								If the max command only responds with mock responses after running test
+								scripts:
 							</p>
 							<CodeBlock>{`cp -r maxcli ~/.local/lib/python/`}</CodeBlock>
-						</InfoCallout>
+						</Callout>
 
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Race Condition Issues (Fixed)
-							</h3>
-							<p className='text-gray-300 mb-4'>
-								The latest bootstrap script includes fixes for race conditions and
-								output mixing. Always use the latest version:
+						<Card title='Race Condition Issues (Fixed)'>
+							<p className='text-sm text-zinc-300'>
+								The latest bootstrap script includes fixes for race conditions and output
+								mixing. Always use the latest version:
 							</p>
 							<CodeBlock>
 								{`# Always use the latest version from main branch
-curl -fsSL https://raw.githubusercontent.com/maximilianls98/maxcli/main/bootstrap.sh | bash
+${INSTALL_COMMAND}
 
 # Or force download even if you have local files
 ./bootstrap.sh --force-download`}
 							</CodeBlock>
-						</div>
-					</div>
-				</div>
+						</Card>
+					</Section>
 
-				{/* Development Section */}
-				<SectionHeader
-					id='development'
-					title='Development'
-					icon={<Code size={24} />}
-					description='Contributing to MaxCLI and creating custom modules.'
-				/>
-
-				<div className='mb-12'>
-					<div className='space-y-6'>
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Development Setup
-							</h3>
-							<CodeBlock>
-								{`# Clone and install in development mode
+					<Section id='development'>
+						<SectionHeader
+							id='development'
+							title='Development'
+							icon={<Code size={18} />}
+							description='Contributing to MaxCLI and creating custom modules.'
+						/>
+						<div className='space-y-6'>
+							<Card title='Development Setup'>
+								<CodeBlock>
+									{`# Clone and install in development mode
 git clone https://github.com/maximilianls98/maxcli.git
 cd maxcli
 pip install -e .
@@ -625,22 +514,15 @@ python -m pytest tests/
 # Run linting
 flake8 maxcli/
 mypy maxcli/`}
-							</CodeBlock>
-						</div>
+								</CodeBlock>
+							</Card>
 
-						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-							<h3 className='text-xl font-semibold text-white mb-4'>
-								Creating Custom Modules
-							</h3>
-							<p className='text-gray-300 mb-4'>
-								Create a new module in{' '}
-								<code className='bg-gray-900 text-green-400 px-1 rounded'>
-									maxcli/modules/
-								</code>
-								:
-							</p>
-							<CodeBlock language='python'>
-								{`# maxcli/modules/my_module.py
+							<Card title='Creating Custom Modules'>
+								<p className='text-sm text-zinc-300'>
+									Create a new module in <InlineCode>maxcli/modules/</InlineCode>:
+								</p>
+								<CodeBlock language='python'>
+									{`# maxcli/modules/my_module.py
 """
 My Custom Module
 
@@ -665,81 +547,52 @@ def register_commands(subparsers) -> None:
 def my_command_function(args):
     """Implementation of my command."""
     print(f"Running my command with option: {args.option}")`}
-							</CodeBlock>
+								</CodeBlock>
+							</Card>
+
+							<Callout type='success' title='Contributing'>
+								<ol className='list-inside list-decimal space-y-1'>
+									<li>Fork the repository</li>
+									<li>Create a feature branch</li>
+									<li>Add your module or improvements</li>
+									<li>Write tests</li>
+									<li>Submit a pull request</li>
+								</ol>
+							</Callout>
 						</div>
+					</Section>
 
-						<InfoCallout type='success' title='Contributing'>
-							<ol className='list-decimal list-inside space-y-1'>
-								<li>Fork the repository</li>
-								<li>Create a feature branch</li>
-								<li>Add your module or improvements</li>
-								<li>Write tests</li>
-								<li>Submit a pull request</li>
-							</ol>
-						</InfoCallout>
-					</div>
-				</div>
-
-				{/* Uninstalling Section */}
-				<div className='mb-12'>
-					<SectionHeader
-						id='uninstalling'
-						title='Uninstalling MaxCLI'
-						icon={<AlertTriangle size={24} />}
-						description='Complete system removal with safety confirmations.'
-					/>
-
-					<InfoCallout type='warning' title='WARNING: Complete System Removal'>
-						<p>
-							The uninstall command completely removes all traces of MaxCLI from your
-							system. This operation is <strong>IRREVERSIBLE</strong> and will
-							permanently delete all your configurations, settings, and
-							customizations.
-						</p>
-					</InfoCallout>
-
-					<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
-						<h3 className='text-xl font-semibold text-white mb-4'>Usage</h3>
-						<CodeBlock>
-							{`# Standard uninstall with double confirmation
+					<Section id='uninstalling'>
+						<SectionHeader
+							id='uninstalling'
+							title='Uninstalling MaxCLI'
+							icon={<AlertTriangle size={18} />}
+							description='Complete system removal with safety confirmations.'
+						/>
+						<Callout type='warning' title='WARNING: Complete System Removal'>
+							<p>
+								The uninstall command completely removes all traces of MaxCLI from your
+								system. This operation is <strong>IRREVERSIBLE</strong> and will
+								permanently delete all your configurations, settings, and customizations.
+							</p>
+						</Callout>
+						<Card title='Usage'>
+							<CodeBlock>
+								{`# Standard uninstall with double confirmation
 max uninstall
 
 # Skip confirmations (NOT RECOMMENDED - dangerous)
 max uninstall --force`}
-						</CodeBlock>
-
-						<p className='text-gray-300 mt-4'>
-							The uninstall command requires double confirmation to prevent accidental
-							deletion.
-						</p>
-					</div>
+							</CodeBlock>
+							<p className='text-sm text-zinc-400'>
+								The uninstall command requires double confirmation to prevent accidental
+								deletion.
+							</p>
+						</Card>
+					</Section>
 				</div>
-
-				{/* Footer */}
-				<div className='border-t border-gray-800 pt-8 mt-12'>
-					<div className='flex flex-col md:flex-row items-center justify-between gap-4'>
-						<div className='text-gray-400'>
-							<p>Need help? Check the GitHub repository or create an issue.</p>
-						</div>
-						<div className='flex gap-3'>
-							<Button
-								asChild
-								variant='outline'
-								className='border-gray-600 text-white hover:bg-gray-700'>
-								<a
-									href='https://github.com/maximilianls98/maxcli'
-									target='_blank'
-									rel='noopener noreferrer'>
-									<GitBranch size={16} className='mr-2' />
-									GitHub Repository
-									<ExternalLink size={12} className='ml-1' />
-								</a>
-							</Button>
-						</div>
-					</div>
-				</div>
-			</main>
-		</div>
+			</div>
+		</SiteLayout>
 	);
 };
 

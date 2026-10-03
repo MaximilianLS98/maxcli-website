@@ -1,114 +1,139 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { GitBranch, Terminal, ArrowRight, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
+import { ArrowRight, BookOpen, Github, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { GITHUB_URL } from '@/lib/site';
+import { useLatestVersion } from '@/hooks/useGitHubReleases';
+import { MODULES } from '../data/modules';
+import HeroTerminal from './HeroTerminal';
+import InstallCommand from './InstallCommand';
+
+const EASE: [number, number, number, number] = [0.21, 0.47, 0.32, 0.98];
+
+const fadeUp = (delay: number) => ({
+	initial: { opacity: 0, y: 16 },
+	animate: { opacity: 1, y: 0 },
+	transition: { duration: 0.6, delay, ease: EASE },
+});
+
+const stats = [
+	{ value: `${MODULES.length}`, label: 'Modules' },
+	{ value: '< 30s', label: 'Install time' },
+	{ value: '100%', label: 'Open source' },
+	{ value: '0', label: 'Bloat' },
+];
 
 const HeroSection = () => {
+	const { data: latestVersion } = useLatestVersion();
+
 	return (
-		<section className='relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden'>
-			{/* Background grid pattern */}
-			<div className='absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]'></div>
+		<section className='relative isolate overflow-hidden pb-24 pt-32 sm:pt-40'>
+			{/* Background */}
+			<div className='bg-grid absolute inset-0 -z-10' />
+			<div className='absolute left-1/2 top-0 -z-10 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/[0.12] blur-[120px]' />
+			<div className='absolute -right-40 top-40 -z-10 h-[400px] w-[500px] rounded-full bg-accent/[0.12] blur-[120px]' />
 
-			{/* Terminal cursor animation */}
-			<div className='absolute top-20 left-20 text-green-400 animate-pulse'>
-				<Terminal size={24} />
-			</div>
-
-			<div className='relative z-10 text-center max-w-6xl mx-auto px-6 mt-4'>
-				{/* Badge */}
-				<div className='inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-8'>
-					<GitBranch size={16} className='text-purple-400' />
-					<span className='text-purple-300 text-sm font-medium'>
-						Open Source • Apache 2.0
-					</span>
-				</div>
-
-				{/* Main headline */}
-				<h1 className='text-6xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-white via-green-300 to-green-400 bg-clip-text text-transparent leading-tight'>
-					MaxCLI
-				</h1>
-
-				<p className='text-2xl md:text-3xl text-gray-300 mb-4 font-light'>
-					Customize Your Command-Line Experience
-				</p>
-
-				<p className='text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed'>
-					The open-source, modular toolkit that adapts to{' '}
-					<em className='text-green-400 font-semibold'>your</em> workflow – enable only
-					what you need.
-				</p>
-
-				{/* Terminal demo */}
-				<div className='bg-gray-800 rounded-lg border border-gray-700 p-6 mb-12 max-w-2xl mx-auto font-mono text-left overflow-hidden'>
-					<div className='flex items-center gap-2 mb-4'>
-						<div className='w-3 h-3 bg-red-500 rounded-full'></div>
-						<div className='w-3 h-3 bg-yellow-500 rounded-full'></div>
-						<div className='w-3 h-3 bg-green-500 rounded-full'></div>
-						<span className='text-gray-400 ml-4 text-sm'>Terminal</span>
-					</div>
-					<div className='space-y-2 text-sm sm:text-base overflow-x-auto'>
-						<div className='text-green-400'>$ maxcli --help</div>
-						<div className='text-gray-300 break-words'>
-							MaxCLI v2.0 - Your Modular Command-Line Powerhouse
-						</div>
-						<div className='text-gray-300 break-words'>
-							Available modules: ssh, docker, gcp, coolify, setup, misc
-						</div>
-						<div className='text-green-400 flex items-center gap-2'>
-							$<span className='w-2 h-5 bg-green-400 animate-pulse'></span>
-						</div>
-					</div>
-				</div>
-
-				{/* CTA Buttons */}
-				<div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
-					<a href='/docs#installation'>
-						<Button className='bg-green-500 hover:bg-green-600 text-black font-semibold px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25'>
-							Get Started
-							<ArrowRight size={20} className='ml-2' />
-						</Button>
-					</a>
-
-					<Button
-						asChild
-						variant='outline'
-						className='border-gray-600 text-white hover:bg-gray-800 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
-						<Link to='/docs'>
-							<BookOpen size={20} className='mr-2' />
-							Documentation
+			<div className='mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 lg:grid-cols-[1.05fr_1fr]'>
+				<div className='min-w-0 text-center lg:text-left'>
+					<motion.div {...fadeUp(0)}>
+						<Link
+							to='/changelog'
+							className='group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1 pr-3 text-sm text-muted-foreground backdrop-blur transition-colors hover:border-primary/40'>
+							<span className='inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary'>
+								<Sparkles size={12} />
+								{latestVersion ?? 'New'}
+							</span>
+							Open source modular CLI
+							<ArrowRight
+								size={14}
+								className='transition-transform group-hover:translate-x-0.5'
+							/>
 						</Link>
-					</Button>
+					</motion.div>
 
-					<a
-						href='https://github.com/MaximilianLS98/MaxCLI'
-						target='_blank'
-						rel='noopener noreferrer'>
+					<motion.h1
+						{...fadeUp(0.08)}
+						className='mt-8 text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl'>
+						<span className='text-gradient'>Customize your</span>
+						<br />
+						<span className='text-gradient-brand'>command line.</span>
+					</motion.h1>
+
+					<motion.p
+						{...fadeUp(0.16)}
+						className='mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground lg:mx-0 sm:text-xl'>
+						MaxCLI is the open-source, modular toolkit that adapts to{' '}
+						<em className='font-semibold not-italic text-foreground'>your</em> workflow.
+						SSH, Docker, Kubernetes, GCP and more, behind one{' '}
+						<code className='rounded bg-white/[0.06] px-1.5 py-0.5 text-[0.9em] text-primary'>
+							max
+						</code>{' '}
+						command. Enable only what you need.
+					</motion.p>
+
+					<motion.div {...fadeUp(0.24)} className='mx-auto mt-10 max-w-xl lg:mx-0'>
+						<InstallCommand />
+					</motion.div>
+
+					<motion.div
+						{...fadeUp(0.32)}
+						className='mt-6 flex flex-col items-center gap-3 sm:flex-row lg:justify-start sm:justify-center'>
 						<Button
-							variant='outline'
-							className='border-gray-600 text-white hover:bg-gray-800 px-8 py-4 text-lg rounded-lg transition-all duration-300 hover:scale-105'>
-							<GitBranch size={20} className='mr-2' />
-							GitHub Repo
+							asChild
+							size='lg'
+							className='h-12 rounded-xl px-6 text-base font-semibold shadow-[0_0_40px_-8px_hsl(var(--primary)/0.7)] transition-all hover:shadow-[0_0_50px_-6px_hsl(var(--primary)/0.9)]'>
+							<Link to='/docs#installation'>
+								Get started
+								<ArrowRight size={18} />
+							</Link>
 						</Button>
-					</a>
+						<Button
+							asChild
+							size='lg'
+							variant='outline'
+							className='h-12 rounded-xl border-white/10 bg-white/[0.03] px-6 text-base hover:bg-white/[0.07]'>
+							<Link to='/docs'>
+								<BookOpen size={18} />
+								Documentation
+							</Link>
+						</Button>
+						<Button
+							asChild
+							size='lg'
+							variant='ghost'
+							className='h-12 rounded-xl px-5 text-base text-muted-foreground hover:bg-white/[0.05] hover:text-foreground'>
+							<a href={GITHUB_URL} target='_blank' rel='noopener noreferrer'>
+								<Github size={18} />
+								GitHub
+							</a>
+						</Button>
+					</motion.div>
+
+					<motion.dl
+						{...fadeUp(0.4)}
+						className='mx-auto mt-14 grid max-w-xl grid-cols-4 divide-x divide-white/[0.06] lg:mx-0'>
+						{stats.map((stat) => (
+							<div key={stat.label} className='px-2 text-center first:pl-0 lg:text-left lg:px-5'>
+								<dt className='sr-only'>{stat.label}</dt>
+								<dd className='font-mono text-2xl font-bold text-foreground'>
+									{stat.value}
+								</dd>
+								<dd className='mt-1 text-xs text-muted-foreground sm:text-sm'>
+									{stat.label}
+								</dd>
+							</div>
+						))}
+					</motion.dl>
 				</div>
 
-				{/* Stats */}
-				<div className='flex items-center justify-center gap-8 mt-16 text-gray-400'>
-					<div className='text-center'>
-						<div className='text-2xl font-bold text-white'>7+</div>
-						<div className='text-sm'>Modules</div>
-					</div>
-					<div className='w-px h-8 bg-gray-600'></div>
-					<div className='text-center'>
-						<div className='text-2xl font-bold text-white'>100%</div>
-						<div className='text-sm'>Open Source</div>
-					</div>
-					<div className='w-px h-8 bg-gray-600'></div>
-					<div className='text-center'>
-						<div className='text-2xl font-bold text-white'>0</div>
-						<div className='text-sm'>Bloat</div>
-					</div>
-				</div>
+				<motion.div
+					className='min-w-0'
+					initial={{ opacity: 0, y: 30, scale: 0.98 }}
+					animate={{ opacity: 1, y: 0, scale: 1 }}
+					transition={{ duration: 0.8, delay: 0.2, ease: EASE }}>
+					<HeroTerminal />
+				</motion.div>
 			</div>
 		</section>
 	);

@@ -63,8 +63,8 @@ const parseReleaseBody = (body: string): string[] => {
 	const changes: string[] = [];
 
 	for (const line of lines) {
-		// Skip headers and empty lines
-		if (line.startsWith('#') || line.trim() === '') continue;
+		// Skip headers, horizontal rules and empty lines
+		if (line.startsWith('#') || line.trim() === '' || /^-{3,}$/.test(line.trim())) continue;
 
 		// Handle bullet points
 		if (line.match(/^[-*+]\s/)) {
@@ -133,7 +133,7 @@ export const useLatestVersion = () => {
 						new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
 				)[0];
 
-			return latestRelease?.tag_name || 'v2.0.1'; // Fallback to current hardcoded version
+			return latestRelease?.tag_name;
 		},
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		retry: 3,
